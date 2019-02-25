@@ -1,5 +1,5 @@
 import time
-from os import system
+import os
 
 def pp(message, mtype='INFO'):
     mtype = mtype.upper()
@@ -17,6 +17,6 @@ def pbot(message, channel=''):
     print(msg)
 
 def pbutton(message_buffer):
-    system('cls')
+    os.system('cls' if os.name == 'nt' else 'clear')
     print('\n\n')
     print('\n'.join([' {0:<12s} {1:>6s}'.format(message['username'][:12].title(), message['button'].lower()) for message in message_buffer]))

@@ -51,7 +51,6 @@ class Irc:
         pp('Joined #%s' % username)
 
     def ping(self, data):
-        data = data.decode()
         if data.startswith('PING'):
             self.sock.send(data.replace('PING', 'PONG').encode())
 
@@ -59,7 +58,7 @@ class Irc:
         return self.sock.recv(amount)
 
     def recv_messages(self, amount=1024):
-        data = self.recv(amount)
+        data = self.recv(amount).decode()
 
         if not data:
             pbot('Lost connection, reconnecting.')
@@ -74,12 +73,11 @@ class Irc:
         if not re.match(r'^:(testserver\.local|tmi\.twitch\.tv) NOTICE \* :Login unsuccessful\r\n$', data.decode()): return True
 
     def check_has_message(self, data):
-        return re.match(r'^:[a-zA-Z0-9_]+\![a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\.tmi\.twitch\.tv|\.testserver\.local) PRIVMSG #[a-zA-Z0-9_]+ :.+$', data.decode())
+        return re.match(r'^:[a-zA-Z0-9_]+\![a-zA-Z0-9_]+@[a-zA-Z0-9_]+(\.tmi\.twitch\.tv|\.testserver\.local) PRIVMSG #[a-zA-Z0-9_]+ :.+$', data)
 
     def parse_message(self, data):
-        data = data.decode()
         return {
             'channel': re.findall(r'^:.+\![a-zA-Z0-9_]+@[a-zA-Z0-9_]+.+ PRIVMSG (.*?) :', data)[0],
             'username': re.findall(r'^:([a-zA-Z0-9_]+)\!', data)[0],
-            'message': re.findall(r'PRIVMSG #[a-zA-Z0-9_]+ :(.+)', data)[0].decode('utf8')
+            'message': re.findall(r'PRIVMSG #[a-zA-Z0-9_]+ :(.+)', data)[0]
         }
